@@ -68,14 +68,14 @@ function deleteApplication(id){
 
 // Local-Storage Integration
 function saveApplication(){
-  localStorage.setItem(application, JSON.stringify(application))
+  localStorage.setItem("application", JSON.stringify(application))
 }
 
 function loadApplication(){
   const savedApplication = localStorage.getItem("application")
 
-  if(storedData){
-    application = JSON.parse(savedApplication);
+  if(savedApplication){
+    application = JSON.parse(application);
   }
   else{
     console.log('User data not found in local storage');
