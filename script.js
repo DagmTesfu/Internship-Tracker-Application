@@ -14,6 +14,19 @@ let application = [];
 form.addEventListener("submit", function (event) {
   event.preventDefault();
 
+  if(companyInput.value.trim() === ""){
+    alert("Please Enter Company Name");
+    return;
+  }
+
+  if(positionInput.value.trim() === ""){
+    alert("Please Enter Position Name");
+    return;
+  }
+
+
+  
+
   const newApplication = {
 
   id: Date.now(),
@@ -74,6 +87,7 @@ function saveApplication(){
 function loadApplication(){
   const savedApplication = localStorage.getItem("application");
 
+  // Saves The data on display
   if(savedApplication){
     application = JSON.parse(savedApplication);
   }
