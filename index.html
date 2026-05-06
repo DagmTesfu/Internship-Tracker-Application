@@ -17,6 +17,9 @@
                     <label for="position">Position:</label>
                     <input type="text" id="position" name="position" required>
 
+                    <label for="deadline">Deadline:</label>
+                    <input type="date" id="deadline" name="deadline" required>
+
                     <label for="status">Status:</label>
                     <select id="status" name="status" required>
                         <option value="">Select Status</option>
@@ -26,13 +29,18 @@
                         <option value="Rejected">Rejected</option>
                     </select>
 
+                     <textarea id="notes"></textarea>
+
                     <button type="submit">Add Internship</button>
-                      <textarea id="notes"></textarea>
+
+                    <div id="applicationsList"></div>
+                     
         
+
                 </form>
             </div>
 
-            <div class = "table-container">
+            <!-- <div class = "table-container">
                 <table id="internship-table">
                     <thead>
                         <tr>
@@ -44,7 +52,7 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-            </div>
+            </div> -->
             <script src = "script.js"></script>
     </body>
 </html>
