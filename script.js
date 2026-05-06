@@ -27,6 +27,7 @@ form.addEventListener("submit", function (event) {
 
   application.push(newApplication);
   displayApplications();
+  saveApplication();
   console.log(application);
   form.reset();
   console.log("Form submitted");
@@ -61,4 +62,26 @@ function deleteApplication(id){
     });
 
     displayApplications();
+    saveApplication();
 }
+
+
+// Local-Storage Integration
+function saveApplication(){
+  localStorage.setItem(application, JSON.stringify(application))
+}
+
+function loadApplication(){
+  const savedApplication = localStorage.getItem("application")
+
+  if(storedData){
+    application = JSON.parse(savedApplication);
+  }
+  else{
+    console.log('User data not found in local storage');
+  }
+
+  displayApplications();
+}
+
+loadApplication();
