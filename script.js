@@ -6,6 +6,7 @@ const dealineInput = document.getElementById("deadline");
 // const tableForm = document.getElementById("internship-table");
 const statuss = document.getElementById("status");
 const applicationsList = document.getElementById("applicationsList");
+const filterStatus = document.getElementById("filterStatus");
 
 
 let application = [];
@@ -14,6 +15,7 @@ let application = [];
 form.addEventListener("submit", function (event) {
   event.preventDefault();
 
+  // prevent empty applications from being added.
   if(companyInput.value.trim() === ""){
     alert("Please Enter Company Name");
     return;
@@ -24,8 +26,6 @@ form.addEventListener("submit", function (event) {
     return;
   }
 
-
-  
 
   const newApplication = {
 
@@ -51,7 +51,18 @@ form.addEventListener("submit", function (event) {
 function displayApplications() {
   applicationsList.innerHTML = "";
 
-  application.forEach(function (newApplication) {
+  const selectedStatus = filterStatus.value;
+
+  const filteredApplications = application.filter(function (newApplication){
+    if(selectedStatus === "All"){
+      return true;
+    }
+
+    return newApplication.Status === selectedStatus;
+  });
+
+
+  filteredApplications.forEach(function (newApplication) {
     const card = document.createElement("div");
 
     card.innerHTML = `
@@ -66,6 +77,10 @@ function displayApplications() {
     applicationsList.appendChild(card);
   });
 }
+
+filterStatus.addEventListener("change", function () {
+  displayApplications();
+});
 
 
 // Delete  Function
