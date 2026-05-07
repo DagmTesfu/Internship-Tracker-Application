@@ -65,9 +65,7 @@ function displayApplications() {
    
   });
 
-  searchInput.addEventListener("input", function (){
-    displayApplications();
-  })
+
 
 
   filteredApplications.forEach(function (newApplication) {
@@ -92,6 +90,10 @@ filterStatus.addEventListener("change", function () {
   displayApplications();
 });
 
+  
+  searchInput.addEventListener("input", function (){
+    displayApplications();
+  })
 
 // Delete  Function
 function deleteApplication(id){
