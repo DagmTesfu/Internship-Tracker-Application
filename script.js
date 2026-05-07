@@ -72,6 +72,8 @@ function displayApplications() {
       <p><strong>Deadline:</strong> ${newApplication.Deadline}</p>
       <p><strong>Notes:</strong> ${newApplication.Description}</p>
       <button onclick="deleteApplication(${newApplication.id})">Delete</button>
+      <button onclick="editApplication(${newApplication.id})">Edit</button>
+      
     `;
 
     applicationsList.appendChild(card);
@@ -91,6 +93,28 @@ function deleteApplication(id){
 
     displayApplications();
     saveApplication();
+}
+
+
+// Edit Function
+function editApplication(id){
+  const applicationToEdit = application.find(function (newApplication) {
+    return newApplication.id == id;
+  });
+
+  companyInput.value = applicationToEdit.company;
+  positionInput.value = applicationToEdit.Position;
+  dealineInput.value = applicationToEdit.Deadline;
+  noteInput.value = applicationToEdit.Description;
+  statuss.value = applicationToEdit.Status;
+
+
+  application = application.filter(function (newApplication) {
+    return newApplication.id !== id;
+  });
+
+  saveApplication();
+  displayApplications();
 }
 
 
