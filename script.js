@@ -7,6 +7,7 @@ const dealineInput = document.getElementById("deadline");
 const statuss = document.getElementById("status");
 const applicationsList = document.getElementById("applicationsList");
 const filterStatus = document.getElementById("filterStatus");
+const searchInput = document.getElementById("searchInput");
 
 
 let application = [];
@@ -52,14 +53,21 @@ function displayApplications() {
   applicationsList.innerHTML = "";
 
   const selectedStatus = filterStatus.value;
+  const searchText = searchInput.value.toLowerCase();
 
   const filteredApplications = application.filter(function (newApplication){
-    if(selectedStatus === "All"){
-      return true;
-    }
+      const matchesStatus = selectedStatus === "All" || newApplication.Status === selectedStatus
 
-    return newApplication.Status === selectedStatus;
+    const matchSearch =  newApplication.company.toLowerCase().includes(searchText) ||
+      newApplication.Position.toLowerCase().includes(searchText);
+
+      return matchesStatus && matchSearch;
+   
   });
+
+  searchInput.addEventListener("input", function (){
+    displayApplications();
+  })
 
 
   filteredApplications.forEach(function (newApplication) {
