@@ -65,6 +65,10 @@ function displayApplications() {
    
   });
 
+ if(filteredApplications.length === 0){
+  applicationsList.innerHTML = "<P> No Application Found. </p>"
+  return;
+ }
 
 
 
