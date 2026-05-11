@@ -33,6 +33,16 @@ app.post("/api/application", function(req, res){
     res.status(201).json(newApp);
 })
 
+app.delete("/api/application/:id", function (req, res) {
+    const id = Number(req.params.id);
+
+    application = application.filter(function (app) {
+        return app.id !== id;
+    });
+
+    res.json({ message: "Application deleted successfully" });
+});
+
 app.listen(PORT, function(){
     console.log(`Server is Running on http://localhost:${PORT}`);
 });
