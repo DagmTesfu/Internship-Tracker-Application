@@ -1,3 +1,7 @@
+console.log("JS file connected");
+
+const API_URL = "http://localhost:5000/api/application";
+
 const form = document.getElementById("internship-form");
 const companyInput = document.getElementById("company");
 const positionInput = document.getElementById("position");
@@ -9,44 +13,81 @@ const applicationsList = document.getElementById("applicationsList");
 const filterStatus = document.getElementById("filterStatus");
 const searchInput = document.getElementById("searchInput");
 
-
 let application = [];
 
+let editId = null;
+
+async function loadApplications() {
+  const response = await fetch(API_URL);
+  application = await response.json();
+
+  displayApplications();
+}
+
 // Application Object
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", async function (event) {
   event.preventDefault();
+  console.log("Form Submitted");
 
   // prevent empty applications from being added.
-  if(companyInput.value.trim() === ""){
+  if (companyInput.value.trim() === "") {
     alert("Please Enter Company Name");
     return;
   }
 
-  if(positionInput.value.trim() === ""){
+  if (positionInput.value.trim() === "") {
     alert("Please Enter Position Name");
     return;
   }
 
-
   const newApplication = {
-
-  id: Date.now(),
-  company: companyInput.value,
-  Position: positionInput.value,
-  Deadline: dealineInput.value,
-  Description: noteInput.value,
-  Status: statuss.value
-
+    company: companyInput.value.trim(),
+    position: positionInput.value.trim(),
+    deadline: dealineInput.value,
+    description: noteInput.value.trim(),
+    status: statuss.value
   };
 
-  application.push(newApplication);
+  if (editId === null) {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newApplication)
+    });
+
+    const savedApplication = await response.json();
+
+    application.push(savedApplication);
+  } else {
+    const response = await fetch(`${API_URL}/${editId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newApplication)
+    });
+
+    const updatedApplication = await response.json();
+
+    application = application.map(function (app) {
+      if (app.id === editId) {
+        return updatedApplication;
+      }
+
+      return app;
+    });
+
+    editId = null;
+  }
+
   displayApplications();
-  saveApplication();
-  console.log(application);
   form.reset();
+
+  console.log(application);
   console.log("Form submitted");
 });
-
 
 // Display Function
 function displayApplications() {
@@ -55,35 +96,33 @@ function displayApplications() {
   const selectedStatus = filterStatus.value;
   const searchText = searchInput.value.toLowerCase();
 
-  const filteredApplications = application.filter(function (newApplication){
-      const matchesStatus = selectedStatus === "All" || newApplication.Status === selectedStatus
+  const filteredApplications = application.filter(function (newApplication) {
+    const matchesStatus =
+      selectedStatus === "All" || newApplication.status === selectedStatus;
 
-    const matchSearch =  newApplication.company.toLowerCase().includes(searchText) ||
-      newApplication.Position.toLowerCase().includes(searchText);
+    const matchSearch =
+      newApplication.company.toLowerCase().includes(searchText) ||
+      newApplication.position.toLowerCase().includes(searchText);
 
-      return matchesStatus && matchSearch;
-   
+    return matchesStatus && matchSearch;
   });
 
- if(filteredApplications.length === 0){
-  applicationsList.innerHTML = "<P> No Application Found. </p>"
-  return;
- }
-
-
+  if (filteredApplications.length === 0) {
+    applicationsList.innerHTML = "<p> No Application Found. </p>";
+    return;
+  }
 
   filteredApplications.forEach(function (newApplication) {
     const card = document.createElement("div");
 
     card.innerHTML = `
       <h3>${newApplication.company}</h3>
-      <p><strong>Role:</strong> ${newApplication.Position}</p>
-      <p><strong>Status:</strong> ${newApplication.Status}</p>
-      <p><strong>Deadline:</strong> ${newApplication.Deadline}</p>
-      <p><strong>Notes:</strong> ${newApplication.Description}</p>
+      <p><strong>Role:</strong> ${newApplication.position}</p>
+      <p><strong>Status:</strong> ${newApplication.status}</p>
+      <p><strong>Deadline:</strong> ${newApplication.deadline}</p>
+      <p><strong>Notes:</strong> ${newApplication.description}</p>
       <button onclick="deleteApplication(${newApplication.id})">Delete</button>
       <button onclick="editApplication(${newApplication.id})">Edit</button>
-      
     `;
 
     applicationsList.appendChild(card);
@@ -94,61 +133,36 @@ filterStatus.addEventListener("change", function () {
   displayApplications();
 });
 
-  
-  searchInput.addEventListener("input", function (){
-    displayApplications();
-  })
+searchInput.addEventListener("input", function () {
+  displayApplications();
+});
 
-// Delete  Function
-function deleteApplication(id){
-    application = application.filter(function (newApplication){
-        return newApplication.id !== id;
-    });
-
-    displayApplications();
-    saveApplication();
-}
-
-
-// Edit Function
-function editApplication(id){
-  const applicationToEdit = application.find(function (newApplication) {
-    return newApplication.id == id;
+// Delete Function
+async function deleteApplication(id) {
+  await fetch(`${API_URL}/${id}`, {
+    method: "DELETE"
   });
-
-  companyInput.value = applicationToEdit.company;
-  positionInput.value = applicationToEdit.Position;
-  dealineInput.value = applicationToEdit.Deadline;
-  noteInput.value = applicationToEdit.Description;
-  statuss.value = applicationToEdit.Status;
-
 
   application = application.filter(function (newApplication) {
     return newApplication.id !== id;
   });
 
-  saveApplication();
   displayApplications();
 }
 
+// Edit Function
+function editApplication(id) {
+  const applicationToEdit = application.find(function (newApplication) {
+    return newApplication.id === id;
+  });
 
-// Local-Storage Integration
-function saveApplication(){
-  localStorage.setItem("application", JSON.stringify(application));
+  companyInput.value = applicationToEdit.company;
+  positionInput.value = applicationToEdit.position;
+  dealineInput.value = applicationToEdit.deadline;
+  noteInput.value = applicationToEdit.description;
+  statuss.value = applicationToEdit.status;
+
+  editId = id;
 }
 
-function loadApplication(){
-  const savedApplication = localStorage.getItem("application");
-
-  // Saves The data on display
-  if(savedApplication){
-    application = JSON.parse(savedApplication);
-  }
-  else{
-    console.log('User data not found in local storage');
-  }
-
-  displayApplications();
-}
-
-loadApplication();
+loadApplications();
