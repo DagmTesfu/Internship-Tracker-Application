@@ -20,6 +20,14 @@ app.get("/api/application", function(req, res){
 });
 
 app.post("/api/application", function(req, res){
+
+    if (!req.body.company || !req.body.position) {
+        return res.status(400).json({
+            message: "Company and position are required"
+        });
+    }
+
+    
     const newApp = {
         id:Date.now(),
         company: req.body.company,
