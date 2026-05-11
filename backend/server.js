@@ -43,6 +43,28 @@ app.delete("/api/application/:id", function (req, res) {
     res.json({ message: "Application deleted successfully" });
 });
 
+app.put("/api/application/:id", function (req, res) {
+    const id = Number(req.params.id);
+
+    const appIndex = application.findIndex(function (app) {
+        return app.id === id;
+    });
+
+    if (appIndex === -1) {
+        return res.status(404).json({ message: "Application not found" });
+    }
+
+    application[appIndex] = {
+        id: id,
+        company: req.body.company,
+        position: req.body.position,
+        deadline: req.body.deadline,
+        description: req.body.description,
+        status: req.body.status
+    };
+
+    res.json(application[appIndex]);
+});
 app.listen(PORT, function(){
     console.log(`Server is Running on http://localhost:${PORT}`);
 });
