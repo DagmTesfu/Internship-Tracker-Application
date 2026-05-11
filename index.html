@@ -1,74 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Internship Tracker</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internship Tracker</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-    <body>
-        <div class = "container">
-            <h1>InterNship Tracker</h1>
-            <div class = "form-container">
-                <form id="internship-form">
-                    <label for="company">Company Name:</label>
-                    <input type="text" id="company" name="company" required>
 
-                    <label for="position">Position:</label>
-                    <input type="text" id="position" name="position" required>
+<body>
+  <div class="container">
+    <h1>InterNship Tracker</h1>
 
-                    <label for="deadline">Deadline:</label>
-                    <input type="date" id="deadline" name="deadline" required>
+    <div class="form-container">
+      <form id="internship-form">
+        <label for="company">Company Name:</label>
+        <input type="text" id="company" name="company" required>
 
-                    <label for="status">Status:</label>
-                    <select id="status" name="status" required>
-                        <option value="">Select Status</option>
-                        <option value="Applied">Applied</option>
-                        <option value="Interviewing">Interviewing</option>
-                        <option value="Offered">Offered</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Accepted">Accepted</option>
-                    </select>
-                    <label for="Description">Description:</label>
-                     <textarea id="notes"></textarea>
+        <label for="position">Position:</label>
+        <input type="text" id="position" name="position" required>
 
-                    <button type="submit">Add Internship</button>
+        <label for="deadline">Deadline:</label>
+        <input type="date" id="deadline" name="deadline" required>
 
+        <label for="status">Status:</label>
+        <select id="status" name="status" required>
+          <option value="">Select Status</option>
+          <option value="Applied">Applied</option>
+          <option value="Interviewing">Interviewing</option>
+          <option value="Offered">Offered</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Accepted">Accepted</option>
+        </select>
 
-                    <select id="filterStatus">
-                        <option value="All">All</option>
-                        <option value="Applied">Applied</option>
-                        <option value="Interviewing">Interviewing</option>
-                        <option value="Offered">Offered</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Accepted">Accepted</option>
-                        </select>
+        <label for="notes">Description:</label>
+        <textarea id="notes"></textarea>
 
-                        <input
-                        type="text"
-                        id="searchInput"
-                        placeholder="Search by Company or Position" />
+        <button type="submit">Add Internship</button>
+      </form>
 
-                    <div id="applicationsList"></div>
-                     
-        
+      <select id="filterStatus">
+        <option value="All">All</option>
+        <option value="Applied">Applied</option>
+        <option value="Interviewing">Interviewing</option>
+        <option value="Offered">Offered</option>
+        <option value="Rejected">Rejected</option>
+        <option value="Accepted">Accepted</option>
+      </select>
 
-                </form>
-            </div>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by Company or Position"
+      />
 
-            <!-- <div class = "table-container">
-                <table id="internship-table">
-                    <thead>
-                        <tr>
-                            <th>Company Name</th>
-                            <th>Position</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div> -->
-            <script src = "script.js" defer></script>
-    </body>
+      <div id="applicationsList"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>

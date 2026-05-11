@@ -7,16 +7,16 @@ const companyInput = document.getElementById("company");
 const positionInput = document.getElementById("position");
 const noteInput = document.getElementById("notes");
 const dealineInput = document.getElementById("deadline");
-// const tableForm = document.getElementById("internship-table");
 const statuss = document.getElementById("status");
 const applicationsList = document.getElementById("applicationsList");
 const filterStatus = document.getElementById("filterStatus");
 const searchInput = document.getElementById("searchInput");
+const submitButton = form.querySelector("button[type='submit']");
 
 let application = [];
-
 let editId = null;
 
+// Load applications from backend
 async function loadApplications() {
   const response = await fetch(API_URL);
   application = await response.json();
@@ -24,9 +24,10 @@ async function loadApplications() {
   displayApplications();
 }
 
-// Application Object
+// Form submit: add or edit application
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
+
   console.log("Form Submitted");
 
   // prevent empty applications from being added.
@@ -48,20 +49,20 @@ form.addEventListener("submit", async function (event) {
     status: statuss.value
   };
 
+  // ADD new application
   if (editId === null) {
-    const response = await fetch(API_URL, {
+    await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(newApplication)
     });
+  }
 
-    const savedApplication = await response.json();
-
-    application.push(savedApplication);
-  } else {
-    const response = await fetch(`${API_URL}/${editId}`, {
+  // EDIT existing application
+  else {
+    await fetch(`${API_URL}/${editId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -69,24 +70,13 @@ form.addEventListener("submit", async function (event) {
       body: JSON.stringify(newApplication)
     });
 
-    const updatedApplication = await response.json();
-
-    application = application.map(function (app) {
-      if (app.id === editId) {
-        return updatedApplication;
-      }
-
-      return app;
-    });
-
     editId = null;
   }
 
-  displayApplications();
   form.reset();
+  submitButton.textContent = "Add Internship";
 
-  console.log(application);
-  console.log("Form submitted");
+  await loadApplications();
 });
 
 // Display Function
@@ -108,7 +98,7 @@ function displayApplications() {
   });
 
   if (filteredApplications.length === 0) {
-    applicationsList.innerHTML = "<p> No Application Found. </p>";
+    applicationsList.innerHTML = "<p>No Application Found.</p>";
     return;
   }
 
@@ -121,18 +111,21 @@ function displayApplications() {
       <p><strong>Status:</strong> ${newApplication.status}</p>
       <p><strong>Deadline:</strong> ${newApplication.deadline}</p>
       <p><strong>Notes:</strong> ${newApplication.description}</p>
-      <button onclick="deleteApplication(${newApplication.id})">Delete</button>
-      <button onclick="editApplication(${newApplication.id})">Edit</button>
+
+      <button type="button" onclick="editApplication(${newApplication.id})">Edit</button>
+      <button type="button" onclick="deleteApplication(${newApplication.id})">Delete</button>
     `;
 
     applicationsList.appendChild(card);
   });
 }
 
+// Filter Function
 filterStatus.addEventListener("change", function () {
   displayApplications();
 });
 
+// Search Function
 searchInput.addEventListener("input", function () {
   displayApplications();
 });
@@ -143,11 +136,7 @@ async function deleteApplication(id) {
     method: "DELETE"
   });
 
-  application = application.filter(function (newApplication) {
-    return newApplication.id !== id;
-  });
-
-  displayApplications();
+  await loadApplications();
 }
 
 // Edit Function
@@ -156,6 +145,11 @@ function editApplication(id) {
     return newApplication.id === id;
   });
 
+  if (!applicationToEdit) {
+    alert("Application not found");
+    return;
+  }
+
   companyInput.value = applicationToEdit.company;
   positionInput.value = applicationToEdit.position;
   dealineInput.value = applicationToEdit.deadline;
@@ -163,6 +157,10 @@ function editApplication(id) {
   statuss.value = applicationToEdit.status;
 
   editId = id;
+  submitButton.textContent = "Update Internship";
+
+  console.log("Editing application with id:", editId);
 }
 
+// Start app
 loadApplications();
