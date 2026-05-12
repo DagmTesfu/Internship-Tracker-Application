@@ -21,6 +21,10 @@ function showMessage(message) {
   alert(message);
 }
 
+function showLoading() {
+  applicationsList.innerHTML = "<p>Loading applications...</p>";
+}
+
 function saveApplicationsToCache() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(application));
 }
@@ -44,24 +48,25 @@ function loadApplicationsFromCache() {
 }
 
 // Load applications from backend
+// Load applications from backend
 async function loadApplications() {
   try {
+    showLoading();
+
     const response = await fetch(API_URL);
     const data = await response.json();
 
     if (!response.ok) {
       showMessage(data.message || "Failed to load applications");
+      applicationsList.innerHTML = "<p>Failed to load applications.</p>";
       return;
     }
 
     application = data;
-    saveApplicationsToCache();
     displayApplications();
   } catch (error) {
-    if (application.length === 0) {
-      applicationsList.innerHTML = "<p>Cannot connect to backend server.</p>";
-    }
-
+    showMessage("Cannot connect to backend server");
+    applicationsList.innerHTML = "<p>Cannot connect to backend server.</p>";
     console.log(error);
   }
 }
