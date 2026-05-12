@@ -16,12 +16,27 @@ const submitButton = form.querySelector("button[type='submit']");
 let application = [];
 let editId = null;
 
+function showMessage(message) {
+  alert(message);
+}
+
 // Load applications from backend
 async function loadApplications() {
-  const response = await fetch(API_URL);
-  application = await response.json();
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json();
 
-  displayApplications();
+    if (!response.ok) {
+      showMessage(data.message || "Failed to load applications");
+      return;
+    }
+
+    application = data;
+    displayApplications();
+  } catch (error) {
+    showMessage("Cannot connect to backend server");
+    console.log(error);
+  }
 }
 
 // Form submit: add or edit application
@@ -30,7 +45,6 @@ form.addEventListener("submit", async function (event) {
 
   console.log("Form Submitted");
 
-  // prevent empty applications from being added.
   if (companyInput.value.trim() === "") {
     alert("Please Enter Company Name");
     return;
@@ -49,34 +63,53 @@ form.addEventListener("submit", async function (event) {
     status: statuss.value
   };
 
-  // ADD new application
-  if (editId === null) {
-    await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(newApplication)
-    });
+  try {
+    // ADD new application
+    if (editId === null) {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newApplication)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showMessage(data.message || "Failed to add application");
+        return;
+      }
+    }
+
+    // EDIT existing application
+    else {
+      const response = await fetch(`${API_URL}/${editId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newApplication)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showMessage(data.message || "Failed to update application");
+        return;
+      }
+
+      editId = null;
+    }
+
+    form.reset();
+    submitButton.textContent = "Add Internship";
+
+    await loadApplications();
+  } catch (error) {
+    showMessage("Cannot connect to backend server");
+    console.log(error);
   }
-
-  // EDIT existing application
-  else {
-    await fetch(`${API_URL}/${editId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(newApplication)
-    });
-
-    editId = null;
-  }
-
-  form.reset();
-  submitButton.textContent = "Add Internship";
-
-  await loadApplications();
 });
 
 // Display Function
@@ -120,10 +153,6 @@ function displayApplications() {
   });
 }
 
-function showMessage(message) {
-  alert(message);
-}
-
 // Filter Function
 filterStatus.addEventListener("change", function () {
   displayApplications();
@@ -136,11 +165,23 @@ searchInput.addEventListener("input", function () {
 
 // Delete Function
 async function deleteApplication(id) {
-  await fetch(`${API_URL}/${id}`, {
-    method: "DELETE"
-  });
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE"
+    });
 
-  await loadApplications();
+    const data = await response.json();
+
+    if (!response.ok) {
+      showMessage(data.message || "Failed to delete application");
+      return;
+    }
+
+    await loadApplications();
+  } catch (error) {
+    showMessage("Cannot connect to backend server");
+    console.log(error);
+  }
 }
 
 // Edit Function
