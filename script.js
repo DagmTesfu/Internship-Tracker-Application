@@ -203,7 +203,14 @@ searchInput.addEventListener("input", function () {
 });
 
 // Delete Function
+// Delete Function
 async function deleteApplication(id) {
+  const confirmDelete = confirm("Are you sure you want to delete this application?");
+
+  if (!confirmDelete) {
+    return;
+  }
+
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE"
@@ -216,12 +223,7 @@ async function deleteApplication(id) {
       return;
     }
 
-    application = application.filter(function (savedApplication) {
-      return savedApplication.id !== id;
-    });
-
-    saveApplicationsToCache();
-    displayApplications();
+    await loadApplications();
   } catch (error) {
     showMessage("Cannot connect to backend server");
     console.log(error);
