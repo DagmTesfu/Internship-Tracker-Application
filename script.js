@@ -48,10 +48,11 @@ function loadApplicationsFromCache() {
 }
 
 // Load applications from backend
-// Load applications from backend
 async function loadApplications() {
   try {
-    showLoading();
+    if (application.length === 0) {
+      showLoading();
+    }
 
     const response = await fetch(API_URL);
     const data = await response.json();
@@ -63,10 +64,13 @@ async function loadApplications() {
     }
 
     application = data;
+    saveApplicationsToCache();
     displayApplications();
   } catch (error) {
-    showMessage("Cannot connect to backend server");
-    applicationsList.innerHTML = "<p>Cannot connect to backend server.</p>";
+    if (application.length === 0) {
+      applicationsList.innerHTML = "<p>Cannot connect to backend server.</p>";
+    }
+
     console.log(error);
   }
 }
@@ -151,6 +155,32 @@ form.addEventListener("submit", async function (event) {
   }
 });
 
+function getStatusClass(status) {
+  const cleanStatus = String(status || "").trim().toLowerCase();
+
+  if (cleanStatus === "applied") {
+    return "status-applied";
+  }
+
+  if (cleanStatus === "interviewing") {
+    return "status-interviewing";
+  }
+
+  if (cleanStatus === "offered") {
+    return "status-offered";
+  }
+
+  if (cleanStatus === "rejected") {
+    return "status-rejected";
+  }
+
+  if (cleanStatus === "accepted") {
+    return "status-accepted";
+  }
+
+  return "";
+}
+
 // Display Function
 function displayApplications() {
   applicationsList.innerHTML = "";
@@ -180,7 +210,14 @@ function displayApplications() {
     card.innerHTML = `
       <h3>${newApplication.company}</h3>
       <p><strong>Role:</strong> ${newApplication.position}</p>
-      <p><strong>Status:</strong> ${newApplication.status}</p>
+
+      <p>
+        <strong>Status:</strong> 
+        <span class="status-badge ${getStatusClass(newApplication.status)}">
+          ${newApplication.status}
+        </span>
+      </p>
+
       <p><strong>Deadline:</strong> ${newApplication.deadline}</p>
       <p><strong>Notes:</strong> ${newApplication.description}</p>
 
@@ -202,7 +239,6 @@ searchInput.addEventListener("input", function () {
   displayApplications();
 });
 
-// Delete Function
 // Delete Function
 async function deleteApplication(id) {
   const confirmDelete = confirm("Are you sure you want to delete this application?");
