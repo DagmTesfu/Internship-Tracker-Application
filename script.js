@@ -120,6 +120,10 @@ function displayApplications() {
   });
 }
 
+function showMessage(message) {
+  alert(message);
+}
+
 // Filter Function
 filterStatus.addEventListener("change", function () {
   displayApplications();

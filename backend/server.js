@@ -14,15 +14,14 @@ app.get("/", function (req, res) {
   res.send("Internship Backend is Running");
 });
 
-
 app.get("/api/test", function (req, res) {
   res.json({ message: "Express test route works" });
 });
 
-
 // GET all applications
 app.get("/api/application", async function (req, res) {
-    console.log("GET /api/application was called");
+  console.log("GET /api/application was called");
+
   const { data, error } = await supabase
     .from("application")
     .select("*")
