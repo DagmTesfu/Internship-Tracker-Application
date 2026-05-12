@@ -12,12 +12,35 @@ const applicationsList = document.getElementById("applicationsList");
 const filterStatus = document.getElementById("filterStatus");
 const searchInput = document.getElementById("searchInput");
 const submitButton = form.querySelector("button[type='submit']");
+const STORAGE_KEY = "internship-applications-cache";
 
 let application = [];
 let editId = null;
 
 function showMessage(message) {
   alert(message);
+}
+
+function saveApplicationsToCache() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(application));
+}
+
+function loadApplicationsFromCache() {
+  const savedApplications = localStorage.getItem(STORAGE_KEY);
+
+  if (!savedApplications) {
+    return false;
+  }
+
+  try {
+    application = JSON.parse(savedApplications);
+    displayApplications();
+    return true;
+  } catch (error) {
+    localStorage.removeItem(STORAGE_KEY);
+    console.log(error);
+    return false;
+  }
 }
 
 // Load applications from backend
@@ -32,9 +55,13 @@ async function loadApplications() {
     }
 
     application = data;
+    saveApplicationsToCache();
     displayApplications();
   } catch (error) {
-    showMessage("Cannot connect to backend server");
+    if (application.length === 0) {
+      applicationsList.innerHTML = "<p>Cannot connect to backend server.</p>";
+    }
+
     console.log(error);
   }
 }
@@ -80,6 +107,8 @@ form.addEventListener("submit", async function (event) {
         showMessage(data.message || "Failed to add application");
         return;
       }
+
+      application.unshift(data);
     }
 
     // EDIT existing application
@@ -100,12 +129,17 @@ form.addEventListener("submit", async function (event) {
       }
 
       editId = null;
+
+      application = application.map(function (savedApplication) {
+        return savedApplication.id === data.id ? data : savedApplication;
+      });
     }
 
     form.reset();
     submitButton.textContent = "Add Internship";
 
-    await loadApplications();
+    saveApplicationsToCache();
+    displayApplications();
   } catch (error) {
     showMessage("Cannot connect to backend server");
     console.log(error);
@@ -177,7 +211,12 @@ async function deleteApplication(id) {
       return;
     }
 
-    await loadApplications();
+    application = application.filter(function (savedApplication) {
+      return savedApplication.id !== id;
+    });
+
+    saveApplicationsToCache();
+    displayApplications();
   } catch (error) {
     showMessage("Cannot connect to backend server");
     console.log(error);
@@ -208,4 +247,5 @@ function editApplication(id) {
 }
 
 // Start app
+loadApplicationsFromCache();
 loadApplications();
